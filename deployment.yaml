@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: credentials-store-app
+  labels:
+    app: credentials-store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: credentials-store
+  template:
+    metadata:
+      labels:
+        app: credentials-store
+    spec:
+      containers:
+      - name: credentials-store
+        image: mmirzabaig/credentials-store:v9
+        ports:
+        - containerPort: 6680
