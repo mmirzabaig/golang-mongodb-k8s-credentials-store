@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,7 +16,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-const uri = "mongodb://10.1.66.166:27017/?timeoutMS=5000"
+var tempUri = os.Getenv("MONGODB_URI")
+var uri = "mongodb://" + tempUri + ":27017/?timeoutMS=5000"
+
+// "mongodb+srv://mmirzabaig:Drinkwater65@cluster0.u6llroj.mongodb.net/?retryWrites=true&w=majority"
+// "mongodb://10.0.2.15:27017/?timeoutMS=5000"
 
 var mongoUser, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 var collection = mongoUser.Database("credentials-store").Collection("credentials")
@@ -71,7 +76,7 @@ type RetrieveUser struct {
 	Username string
 }
 
-// curl -X POST http://localhost:6680/addUser -H 'Content-Type: application/json' -d '{"username": "testing", "secret": "yes"}'
+// curl -X POST http://localhost:6680/addUser -H 'Content-Type: application/json' -d '{"username": "mmirzabaig", "secret": "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"}'
 func addUser(c *gin.Context) {
 
 	var postRequestUser User
@@ -129,7 +134,7 @@ func retrieveUser(c *gin.Context) {
 			fmt.Println("error decrypting your encrypted text: ", err)
 		}
 		result.Secret = decText
-		c.IndentedJSON(http.StatusCreated, result)
+		c.IndentedJSON(http.StatusCreated, result.Secret)
 	} else {
 		c.IndentedJSON(http.StatusCreated, "User "+retrieve.Username+" does not exist :(")
 	}
@@ -167,5 +172,5 @@ func main() {
 	router.POST("/retrieveUser", retrieveUser)
 
 	fmt.Println("You are live on port 6680")
-	router.Run("localhost:6680")
+	router.Run(":6680")
 }

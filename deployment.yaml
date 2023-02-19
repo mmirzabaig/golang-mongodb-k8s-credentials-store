@@ -16,6 +16,9 @@ spec:
     spec:
       containers:
       - name: credentials-store
-        image: mmirzabaig/credentials-store:v9
+        image: mmirzabaig/credentials-store:v13
+        env:
+        - name: MONGODB_URI
+          value: m-o-n-g-o-d-b-i-p
         ports:
         - containerPort: 6680

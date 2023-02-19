@@ -7,8 +7,6 @@ metadata:
 spec:
   ports:
   - port: 6680
-    targetPort: 6000
+    targetPort: 6680
   selector:
-    app: credetials-store
-    type: ClusterIP
-  
+    app: credentials-store  

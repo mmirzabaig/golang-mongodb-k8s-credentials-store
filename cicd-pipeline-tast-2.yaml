@@ -1,0 +1,38 @@
+#! /bin/bash
+
+cp /tmp/mongodb-ip mongodbIP
+chmod 0755 mongodbIP 
+MONGODB_URI=$(cat mongodbIP)
+echo $MONGODB_URI
+
+cp deployment.yaml tempDeployment.yaml
+sed -i s/m-o-n-g-o-d-b-i-p/$MONGODB_URI
+
+cp mongodb-cm-IP.yaml temp-mongodb-cm-IP.yaml
+sed -i s/m-o-n-g-o-d-b-i-p/$POD_IP/ temp-mongodb-cm-IP.yaml
+sed -i s/c-m-n-a-m-e/mongodb-ip-cm/ temp-mongodb-cm-IP.yaml
+echo "MongoDB ConfigMap to use in the event listener pod"
+cat temp-mongodb-cm-IP.yaml
+kubectl apply -n test -f temp-mongodb-cm-IP.yaml
+rm -rf temp-mongodb-cm-IP.yaml
+
+
+
+#! /bin/bash
+POD_IP=$(kubectl get pod -n test -l="app=mongodb" -o yaml | grep podIP:)
+LENGTH=`echo $POD_IP | awk '{print length}'`
+
+if [ $LENGTH -lt 1 ]; 
+then
+echo "mongodb pod not running"
+echo $i "SLEEPING FOR TWO SECONDS"
+sleep 2
+else
+echo "MongoDB Pod IP"
+POD_IP="${POD_IP:11}"
+echo $POD_IP
+break
+fi
+
+done
+
